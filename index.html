@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bargeld-Planer</title>
+<title>Bargeld-Planer · Cash Planner · Planer gotovine</title>
 <meta name="theme-color" content="#0E1C20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -35,9 +35,14 @@ body{margin:0;background:var(--bg);color:var(--text);
   font-family:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   font-size:16px;line-height:1.5;font-variant-numeric:tabular-nums}
 main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
-h1{font-size:1.1rem;font-weight:600;margin:0 0 4px;color:var(--muted)}
+h1{font-size:1.1rem;font-weight:600;margin:0;color:var(--muted)}
 h2{font-size:1.15rem;font-weight:600;margin:0}
-.hero{padding:20px 0 24px;border-bottom:1px solid var(--line);margin-bottom:24px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.lang{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.lang button{background:none;border:0;color:var(--muted);padding:0 12px;min-height:40px;font-weight:600;letter-spacing:.04em}
+.lang button[aria-pressed="true"]{background:var(--surface2);color:var(--cash)}
+.pf label b{font-weight:400}
+.hero{padding:12px 0 24px;border-bottom:1px solid var(--line);margin-bottom:24px}
 .hero .big{font-size:clamp(2.6rem,11vw,4.2rem);font-weight:800;line-height:1.05;color:var(--cash);letter-spacing:-.02em}
 .hero .big.neg{color:var(--bad)}
 .hero p{margin:6px 0 0;color:var(--muted);max-width:60ch}
@@ -92,71 +97,154 @@ select.bar{color:var(--cash)} select.konto{color:var(--konto)}
 </head>
 <body>
 <main>
+  <div class="topbar"><h1 data-i18n="title">Bargeld-Planer</h1>
+    <div class="lang" role="group" aria-label="Sprache / Language / Jezik">
+      <button type="button" data-lang="de" lang="de">DE</button><button type="button" data-lang="en" lang="en">EN</button><button type="button" data-lang="hr" lang="hr">HR</button>
+    </div></div>
   <div class="hero">
-    <h1>Bargeld-Planer</h1>
     <div class="big" id="maxCash">0,00 €</div>
-    <p>kannst du diesen Monat bar abheben, ohne dass Abbuchungen vom Konto platzen.</p>
+    <p data-i18n="heroSub">kannst du diesen Monat bar abheben, ohne dass Abbuchungen vom Konto platzen.</p>
     <p class="atm" id="atm"></p>
     <div class="split">
-      <div class="k"><small>Bleibt auf dem Konto</small><b id="stayKonto">0,00 €</b></div>
-      <div class="c"><small>Bar frei zum Ausgeben</small><b id="freeCash">0,00 €</b></div>
+      <div class="k"><small data-i18n="stayKonto">Bleibt auf dem Konto</small><b id="stayKonto">0,00 €</b></div>
+      <div class="c"><small data-i18n="freeCash">Bar frei zum Ausgeben</small><b id="freeCash">0,00 €</b></div>
     </div>
     <div id="msgs"></div>
   </div>
 
   <section>
-    <div class="head"><h2>Einnahmen</h2><span class="sum" id="sumIn"></span></div>
+    <div class="head"><h2 data-i18n="income">Einnahmen</h2><span class="sum" id="sumIn"></span></div>
     <div id="incomeList"></div>
-    <button class="add" id="addIncome" type="button">+ Einnahme hinzufügen</button>
+    <button class="add" id="addIncome" type="button" data-i18n="addIncome">+ Einnahme hinzufügen</button>
   </section>
 
   <section>
-    <div class="head"><h2>Ausgaben</h2><span class="sum" id="sumOut"></span></div>
-    <p class="calc" style="margin:0 0 12px">„Konto“ = wird abgebucht/überwiesen (Miete, Handy, Versicherung). „Bar“ = zahlst du mit Bargeld (Einkauf, Tanken).</p>
+    <div class="head"><h2 data-i18n="expenses">Ausgaben</h2><span class="sum" id="sumOut"></span></div>
+    <p class="calc" style="margin:0 0 12px" data-i18n="expHint">„Konto“ = wird abgebucht/überwiesen (Miete, Handy, Versicherung). „Bar“ = zahlst du mit Bargeld (Einkauf, Tanken).</p>
     <div id="expenseList"></div>
-    <button class="add" id="addExpense" type="button">+ Ausgabe hinzufügen</button>
+    <button class="add" id="addExpense" type="button" data-i18n="addExpense">+ Ausgabe hinzufügen</button>
   </section>
 
   <section>
-    <div class="head"><h2>Puffer</h2></div>
-    <div class="pf"><label for="bufKonto">Puffer auf dem Konto<span>falls eine Abbuchung höher ausfällt</span></label><input class="num" id="bufKonto" inputmode="decimal"></div>
-    <div class="pf"><label for="bufCash">Puffer im Bargeld<span>Notreserve, nicht verplanen</span></label><input class="num" id="bufCash" inputmode="decimal"></div>
+    <div class="head"><h2 data-i18n="buffer">Puffer</h2></div>
+    <div class="pf"><label for="bufKonto"><b data-i18n="bufKonto">Puffer auf dem Konto</b><span data-i18n="bufKontoSub">falls eine Abbuchung höher ausfällt</span></label><input class="num" id="bufKonto" inputmode="decimal"></div>
+    <div class="pf"><label for="bufCash"><b data-i18n="bufCash">Puffer im Bargeld</b><span data-i18n="bufCashSub">Notreserve, nicht verplanen</span></label><input class="num" id="bufCash" inputmode="decimal"></div>
   </section>
 
   <section>
-    <div class="head"><h2>Rechnung</h2></div>
+    <div class="head"><h2 data-i18n="calc">Rechnung</h2></div>
     <div class="calc" id="calc"></div>
   </section>
 
-  <div class="exp-btns"><button type="button" id="saveData">Daten sichern</button><button type="button" id="loadData">Daten laden</button><button type="button" id="saveHtml">Als HTML speichern</button><button type="button" id="savePdf">Als PDF speichern</button></div>
+  <div class="exp-btns"><button type="button" id="saveData" data-i18n="saveData">Daten sichern</button><button type="button" id="loadData" data-i18n="loadData">Daten laden</button><button type="button" id="saveHtml" data-i18n="saveHtml">Als HTML speichern</button><button type="button" id="savePdf" data-i18n="savePdf">Als PDF speichern</button></div>
   <input type="file" id="fileIn" accept=".json,application/json" hidden>
   <div id="expMsg" class="calc" role="status"></div>
-  <div class="foot"><span id="saved">Eingaben werden in diesem Browser gespeichert.</span><button type="button" id="reset">Alles zurücksetzen</button></div>
+  <div class="foot"><span id="saved" data-i18n="savedNote">Eingaben werden in diesem Browser gespeichert.</span><button type="button" id="reset" data-i18n="reset">Alles zurücksetzen</button></div>
 </main>
 
-<script id="planer-data" type="application/json" data-keep>{"savedAt": 1, "income": [{"name": "Gehalt", "amount": ""}], "expenses": [{"name": "Miete", "amount": "", "pay": "konto"}, {"name": "Handy", "amount": "", "pay": "konto"}, {"name": "Lebensmittel", "amount": "", "pay": "bar"}], "bufKonto": "50,00", "bufCash": "50,00"}</script>
+<script id="planer-data" type="application/json" data-keep>null</script>
 
 <script data-keep>
 (function(){
   "use strict";
   var KEY = "bargeldplaner_v1";
-  var DEFAULT0 = {
-    income:[{name:"Gehalt",amount:""}],
-    expenses:[
-      {name:"Miete",amount:"",pay:"konto"},
-      {name:"Handy",amount:"",pay:"konto"},
-      {name:"Lebensmittel",amount:"",pay:"bar"}
-    ],
-    bufKonto:"50,00", bufCash:"50,00"
-  };
-  var DEFAULT = DEFAULT0;
 
-  // "1.234,56" / "985,69" / "985.69" / "  20 " -> Cent (Integer); leer -> 0; ungültig -> null
+  var T = {
+    de:{ title:"Bargeld-Planer", heroSub:"kannst du diesen Monat bar abheben, ohne dass Abbuchungen vom Konto platzen.",
+      atm:"Am Automaten (auf 10 € abgerundet): ", stayKonto:"Bleibt auf dem Konto", freeCash:"Bar frei zum Ausgeben",
+      income:"Einnahmen", addIncome:"+ Einnahme hinzufügen", expenses:"Ausgaben", addExpense:"+ Ausgabe hinzufügen",
+      expHint:"„Konto“ = wird abgebucht/überwiesen (Miete, Handy, Versicherung). „Bar“ = zahlst du mit Bargeld (Einkauf, Tanken).",
+      buffer:"Puffer", bufKonto:"Puffer auf dem Konto", bufKontoSub:"falls eine Abbuchung höher ausfällt",
+      bufCash:"Puffer im Bargeld", bufCashSub:"Notreserve, nicht verplanen", calc:"Rechnung",
+      saveData:"Daten sichern", loadData:"Daten laden", saveHtml:"Als HTML speichern", savePdf:"Als PDF speichern",
+      savedNote:"Eingaben werden in diesem Browser gespeichert.", saveFail:"Speichern in diesem Browser nicht möglich.",
+      reset:"Alles zurücksetzen", resetConfirm:"Wirklich alles löschen? Nochmal tippen",
+      namePh:"Bezeichnung", amount:"Betrag", pay:"Zahlart", konto:"Konto", bar:"Bar",
+      delIncome:"Einnahme löschen", delExpense:"Ausgabe löschen",
+      invalid:function(n){ return n + " Betrag/Beträge ungültig (rot markiert) – zählen nicht mit. Format z. B. 49,99"; },
+      shortKonto:function(x){ return "Einnahmen reichen nicht für Konto-Ausgaben + Konto-Puffer. Es fehlen " + x + ". Nichts bar abheben."; },
+      shortCash:function(x){ return "Bargeld reicht nicht für Bar-Ausgaben + Bar-Puffer. Es fehlen " + x + "."; },
+      allOk:function(a,b){ return "Alles gedeckt. Puffer: " + a + " Konto + " + b + " bar."; },
+      cIncome:"Einnahmen", cKonto:"− Konto-Ausgaben", cBufK:"− Puffer Konto", cMax:"= Max. bar abheben",
+      cBar:"− Bar-Ausgaben", cBufC:"− Puffer bar", cFree:"= Bar frei zum Ausgeben",
+      noName:"(ohne Name)", asOf:"Stand: ", pdfMax:"Max. bar abheben:", total:"Summe", invalidShort:"ungültig",
+      saved:"Gespeichert: ", cancelled:"Speichern abgebrochen.", notPossible:function(c){ return "Speichern hier nicht möglich (" + c + ")."; },
+      notAvail:"Speichern ist in dieser Ansicht nicht verfügbar.", pdfLoading:"PDF-Modul wird geladen …",
+      pdfLoadFail:"PDF-Modul konnte nicht geladen werden – Internetverbindung prüfen.", pdfFail:"PDF konnte nicht erstellt werden: ",
+      readFailFmt:"Datei konnte nicht gelesen werden (kein gültiges Format).", noData:"Datei enthält keine Planer-Daten.",
+      loaded:function(i,e){ return "Daten geladen: " + i + (i===1?" Einnahme, ":" Einnahmen, ") + e + (e===1?" Ausgabe.":" Ausgaben."); }, readFail:"Datei konnte nicht gelesen werden.",
+      file:"bargeld-planer", dataFile:"bargeld-daten", locale:"de-DE",
+      defaults:["Gehalt","Miete","Handy","Lebensmittel"] },
+    en:{ title:"Cash Planner", heroSub:"is how much cash you can withdraw this month without any direct debits bouncing.",
+      atm:"At the ATM (rounded down to €10): ", stayKonto:"Stays in your account", freeCash:"Cash left to spend",
+      income:"Income", addIncome:"+ Add income", expenses:"Expenses", addExpense:"+ Add expense",
+      expHint:"“Account” = debited or paid by transfer (rent, phone, insurance). “Cash” = paid in cash (groceries, fuel).",
+      buffer:"Buffer", bufKonto:"Buffer in your account", bufKontoSub:"in case a debit turns out higher",
+      bufCash:"Cash buffer", bufCashSub:"emergency reserve – don't plan to spend it", calc:"Calculation",
+      saveData:"Back up data", loadData:"Load data", saveHtml:"Save as HTML", savePdf:"Save as PDF",
+      savedNote:"Your entries are saved in this browser.", saveFail:"Saving isn't possible in this browser.",
+      reset:"Reset everything", resetConfirm:"Really delete everything? Tap again",
+      namePh:"Description", amount:"Amount", pay:"Payment method", konto:"Account", bar:"Cash",
+      delIncome:"Delete income", delExpense:"Delete expense",
+      invalid:function(n){ return n + (n===1 ? " invalid amount" : " invalid amounts") + " (marked red) – not counted. Format e.g. 49.99"; },
+      shortKonto:function(x){ return "Your income doesn't cover account expenses + account buffer. You're short by " + x + ". Don't withdraw any cash."; },
+      shortCash:function(x){ return "Your cash doesn't cover cash expenses + cash buffer. You're short by " + x + "."; },
+      allOk:function(a,b){ return "Everything is covered. Buffer: " + a + " in your account + " + b + " in cash."; },
+      cIncome:"Income", cKonto:"− Account expenses", cBufK:"− Account buffer", cMax:"= Max. cash withdrawal",
+      cBar:"− Cash expenses", cBufC:"− Cash buffer", cFree:"= Cash left to spend",
+      noName:"(no name)", asOf:"As of: ", pdfMax:"Max. cash withdrawal:", total:"Total", invalidShort:"invalid",
+      saved:"Saved: ", cancelled:"Saving cancelled.", notPossible:function(c){ return "Saving isn't possible here (" + c + ")."; },
+      notAvail:"Saving isn't available in this view.", pdfLoading:"Loading PDF module …",
+      pdfLoadFail:"Couldn't load the PDF module – please check your internet connection.", pdfFail:"Couldn't create the PDF: ",
+      readFailFmt:"Couldn't read the file (invalid format).", noData:"The file doesn't contain any planner data.",
+      loaded:function(i,e){ return "Data loaded: " + i + (i===1?" income entry, ":" income entries, ") + e + (e===1?" expense.":" expenses."); }, readFail:"Couldn't read the file.",
+      file:"cash-planner", dataFile:"cash-planner-data", locale:"en-GB",
+      defaults:["Salary","Rent","Phone","Groceries"] },
+    hr:{ title:"Planer gotovine", heroSub:"možeš ovaj mjesec podići u gotovini, a da nijedno izravno terećenje računa ne bude odbijeno.",
+      atm:"Na bankomatu (zaokruženo naniže na 10 €): ", stayKonto:"Ostaje na računu", freeCash:"Gotovina za slobodno trošenje",
+      income:"Prihodi", addIncome:"+ Dodaj prihod", expenses:"Troškovi", addExpense:"+ Dodaj trošak",
+      expHint:"„Račun“ = iznos se skida s računa ili plaća prijenosom (najam, mobitel, osiguranje). „Gotovina“ = plaćaš gotovinom (namirnice, gorivo).",
+      buffer:"Rezerva", bufKonto:"Rezerva na računu", bufKontoSub:"ako neko terećenje bude veće od očekivanog",
+      bufCash:"Rezerva u gotovini", bufCashSub:"za hitne slučajeve – ne planiraj je trošiti", calc:"Izračun",
+      saveData:"Spremi podatke", loadData:"Učitaj podatke", saveHtml:"Spremi kao HTML", savePdf:"Spremi kao PDF",
+      savedNote:"Unosi se spremaju u ovom pregledniku.", saveFail:"Spremanje u ovom pregledniku nije moguće.",
+      reset:"Izbriši sve", resetConfirm:"Stvarno sve izbrisati? Dodirni ponovno",
+      namePh:"Naziv", amount:"Iznos", pay:"Način plaćanja", konto:"Račun", bar:"Gotovina",
+      delIncome:"Izbriši prihod", delExpense:"Izbriši trošak",
+      invalid:function(n){ return "Neispravnih iznosa: " + n + " (označeno crveno) – ne ulaze u izračun. Primjer formata: 49,99"; },
+      shortKonto:function(x){ return "Prihodi ne pokrivaju troškove s računa i rezervu na računu. Nedostaje " + x + ". Nemoj podizati gotovinu."; },
+      shortCash:function(x){ return "Gotovina ne pokriva gotovinske troškove i rezervu u gotovini. Nedostaje " + x + "."; },
+      allOk:function(a,b){ return "Sve je pokriveno. Rezerva: " + a + " na računu + " + b + " u gotovini."; },
+      cIncome:"Prihodi", cKonto:"− Troškovi s računa", cBufK:"− Rezerva na računu", cMax:"= Najviše za podizanje",
+      cBar:"− Gotovinski troškovi", cBufC:"− Rezerva u gotovini", cFree:"= Gotovina za slobodno trošenje",
+      noName:"(bez naziva)", asOf:"Stanje na dan: ", pdfMax:"Najviše za podizanje u gotovini:", total:"Ukupno", invalidShort:"neispravno",
+      saved:"Spremljeno: ", cancelled:"Spremanje je otkazano.", notPossible:function(c){ return "Spremanje ovdje nije moguće (" + c + ")."; },
+      notAvail:"Spremanje nije dostupno u ovom prikazu.", pdfLoading:"Učitavanje PDF modula …",
+      pdfLoadFail:"PDF modul nije moguće učitati – provjeri internetsku vezu.", pdfFail:"PDF nije moguće izraditi: ",
+      readFailFmt:"Datoteku nije moguće pročitati (neispravan format).", noData:"Datoteka ne sadrži podatke planera.",
+      loaded:function(i,e){ return "Podaci su učitani – prihodi: " + i + ", troškovi: " + e + "."; }, readFail:"Datoteku nije moguće pročitati.",
+      file:"planer-gotovine", dataFile:"planer-gotovine-podaci", locale:"hr-HR",
+      defaults:["Plaća","Najam","Mobitel","Namirnice"] }
+  };
+  var LKEY = "bargeldplaner_lang", LANG;
+  try { LANG = localStorage.getItem(LKEY); } catch(e){}
+  if (!T[LANG]) { var nl = String((navigator.languages && navigator.languages[0]) || navigator.language || "de").toLowerCase().slice(0,2);
+    LANG = nl === "hr" || nl === "bs" || nl === "sr" ? "hr" : nl === "de" ? "de" : nl === "en" ? "en" : "de"; }
+  function t(k){ return T[LANG][k]; }
+  function makeDefault(){ var d = t("defaults"); return {
+    income:[{name:d[0],amount:""}],
+    expenses:[{name:d[1],amount:"",pay:"konto"},{name:d[2],amount:"",pay:"konto"},{name:d[3],amount:"",pay:"bar"}],
+    bufKonto: LANG==="en" ? "50.00" : "50,00", bufCash: LANG==="en" ? "50.00" : "50,00" }; }
+
+
+  // Betrag -> Cent (Integer); leer -> 0; ungültig -> null
   function toCents(str){
     var s = String(str == null ? "" : str).replace(/\s|€/g,"");
     if (s === "") return 0;
-    if (s.indexOf(",") >= 0) s = s.replace(/\./g,"").replace(",",".");
-    else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g,"");
+    var ci = s.lastIndexOf(","), di = s.lastIndexOf(".");
+    if (ci >= 0 && di >= 0) { if (ci > di) s = s.replace(/\./g,"").replace(",","."); else s = s.replace(/,/g,""); }
+    else if (ci >= 0) { if (LANG === "en" && /^\d{1,3}(,\d{3})+$/.test(s)) s = s.replace(/,/g,""); else s = s.replace(",","."); }
+    else if (LANG !== "en" && /^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g,"");
     if (!/^\d+(\.\d{1,2})?$/.test(s)) return null;
     var p = s.split(".");
     return parseInt(p[0],10)*100 + (p[1] ? parseInt((p[1]+"0").slice(0,2),10) : 0);
@@ -164,8 +252,8 @@ select.bar{color:var(--cash)} select.konto{color:var(--konto)}
   function fmt(c){
     var neg = c < 0; c = Math.abs(c);
     var e = Math.floor(c/100), ct = ("0"+(c%100)).slice(-2);
-    var es = String(e).replace(/\B(?=(\d{3})+(?!\d))/g,".");
-    return (neg?"−":"") + es + "," + ct + " €";
+    if (LANG === "en") return (neg?"−":"") + "€" + String(e).replace(/\B(?=(\d{3})+(?!\d))/g,",") + "." + ct;
+    return (neg?"−":"") + String(e).replace(/\B(?=(\d{3})+(?!\d))/g,".") + "," + ct + " €";
   }
 
   function compute(st){
@@ -195,10 +283,10 @@ select.bar{color:var(--cash)} select.konto{color:var(--konto)}
   try { var raw = localStorage.getItem(KEY); local = raw ? JSON.parse(raw) : null; } catch(e){}
   if (!valid(embedded)) embedded = null; if (!valid(local)) local = null;
   if (local && (!embedded || (local.savedAt||0) > (embedded.savedAt||0))) state = local;
-  else state = embedded || JSON.parse(JSON.stringify(DEFAULT));
+  else state = embedded || makeDefault();
 
   var ready = false;
-  function save(){ if(!ready) return; state.savedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){ document.getElementById("saved").textContent = "Speichern in diesem Browser nicht möglich."; } }
+  function save(){ if(!ready) return; state.savedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){ document.getElementById("saved").textContent = t("saveFail"); } }
 
   function el(tag, attrs){ var n=document.createElement(tag); for(var k in attrs){ if(k==="text") n.textContent=attrs[k]; else n.setAttribute(k,attrs[k]); } return n; }
 
@@ -211,7 +299,7 @@ select.bar{color:var(--cash)} select.konto{color:var(--konto)}
     node.addEventListener("click", function(e){ if (Date.now()-lastTouch < 800) return; fn(e); });
   }
   function numInput(obj, field){
-    var i = el("input",{class:"num",inputmode:"decimal",placeholder:"0,00","aria-label":"Betrag"});
+    var i = el("input",{class:"num",inputmode:"decimal",placeholder:(LANG==="en"?"0.00":"0,00"),"aria-label":t("amount")});
     i.value = obj[field];
     i.addEventListener("input", function(){ obj[field]=i.value; mark(i); update(); });
     mark(i); return i;
@@ -222,22 +310,22 @@ select.bar{color:var(--cash)} select.konto{color:var(--konto)}
     var il = document.getElementById("incomeList"); il.innerHTML="";
     state.income.forEach(function(it, idx){
       var r = el("div",{class:"row"});
-      var n = el("input",{placeholder:"Bezeichnung","aria-label":"Bezeichnung"}); n.value = it.name;
+      var n = el("input",{placeholder:t("namePh"),"aria-label":t("namePh")}); n.value = it.name;
       n.addEventListener("input",function(){ it.name=n.value; save(); });
-      var d = el("button",{class:"del",type:"button","aria-label":"Einnahme löschen",text:"✕"});
+      var d = el("button",{class:"del",type:"button","aria-label":t("delIncome"),text:"✕"});
       onTap(d,function(){ state.income.splice(idx,1); render(); save(); });
       r.append(n, numInput(it,"amount"), d); il.append(r);
     });
     var xl = document.getElementById("expenseList"); xl.innerHTML="";
     state.expenses.forEach(function(it, idx){
       var r = el("div",{class:"row exp"});
-      var n = el("input",{placeholder:"Bezeichnung","aria-label":"Bezeichnung"}); n.value = it.name;
+      var n = el("input",{placeholder:t("namePh"),"aria-label":t("namePh")}); n.value = it.name;
       n.addEventListener("input",function(){ it.name=n.value; save(); });
-      var s = el("select",{"aria-label":"Zahlart"});
-      [["konto","Konto"],["bar","Bar"]].forEach(function(o){ var op=el("option",{value:o[0],text:o[1]}); s.append(op); });
+      var s = el("select",{"aria-label":t("pay")});
+      [["konto",t("konto")],["bar",t("bar")]].forEach(function(o){ var op=el("option",{value:o[0],text:o[1]}); s.append(op); });
       s.value = it.pay; s.className = it.pay;
       var onSel=function(){ if(it.pay===s.value) return; it.pay=s.value; s.className=s.value; update(); }; s.addEventListener("change",onSel); s.addEventListener("input",onSel);
-      var d = el("button",{class:"del",type:"button","aria-label":"Ausgabe löschen",text:"✕"});
+      var d = el("button",{class:"del",type:"button","aria-label":t("delExpense"),text:"✕"});
       onTap(d,function(){ state.expenses.splice(idx,1); render(); save(); });
       r.append(n, numInput(it,"amount"), s, d); xl.append(r);
     });
@@ -250,28 +338,28 @@ select.bar{color:var(--cash)} select.konto{color:var(--konto)}
     var r = compute(state);
     var mc = document.getElementById("maxCash");
     mc.textContent = fmt(Math.max(r.maxCash,0)); mc.classList.toggle("neg", r.maxCash<=0);
-    document.getElementById("atm").textContent = r.atm>0 ? "Am Automaten (auf 10 € abgerundet): " + fmt(r.atm) : "";
+    document.getElementById("atm").textContent = r.atm>0 ? t("atm") + fmt(r.atm) : "";
     document.getElementById("stayKonto").textContent = fmt(r.konto + r.bk);
     document.getElementById("freeCash").textContent = fmt(r.free);
     document.getElementById("sumIn").textContent = fmt(r.inc);
     document.getElementById("sumOut").textContent = fmt(r.konto + r.bar);
 
     var m = [];
-    if (r.invalid) m.push(["bad", r.invalid + " Betrag/Beträge ungültig (rot markiert) – zählen nicht mit. Format z. B. 49,99"]);
-    if (r.maxCash < 0) m.push(["bad","Einnahmen reichen nicht für Konto-Ausgaben + Konto-Puffer. Es fehlen " + fmt(-r.maxCash) + ". Nichts bar abheben."]);
-    else if (r.free < 0) m.push(["warn","Bargeld reicht nicht für Bar-Ausgaben + Bar-Puffer. Es fehlen " + fmt(-r.free) + "."]);
-    else if (r.inc > 0) m.push(["ok","Alles gedeckt. Puffer: " + fmt(r.bk) + " Konto + " + fmt(r.bc) + " bar."]);
+    if (r.invalid) m.push(["bad", t("invalid")(r.invalid)]);
+    if (r.maxCash < 0) m.push(["bad", t("shortKonto")(fmt(-r.maxCash))]);
+    else if (r.free < 0) m.push(["warn", t("shortCash")(fmt(-r.free))]);
+    else if (r.inc > 0) m.push(["ok", t("allOk")(fmt(r.bk), fmt(r.bc))]);
     var box = document.getElementById("msgs"); box.innerHTML="";
     m.forEach(function(x){ box.append(el("div",{class:"msg "+x[0],text:x[1]})); });
 
     var lines = [
-      ["Einnahmen", fmt(r.inc)],
-      ["− Konto-Ausgaben", fmt(r.konto)],
-      ["− Puffer Konto", fmt(r.bk)],
-      ["= Max. bar abheben", fmt(r.maxCash)],
-      ["− Bar-Ausgaben", fmt(r.bar)],
-      ["− Puffer bar", fmt(r.bc)],
-      ["= Bar frei zum Ausgeben", fmt(r.free)]
+      [t("cIncome"), fmt(r.inc)],
+      [t("cKonto"), fmt(r.konto)],
+      [t("cBufK"), fmt(r.bk)],
+      [t("cMax"), fmt(r.maxCash)],
+      [t("cBar"), fmt(r.bar)],
+      [t("cBufC"), fmt(r.bc)],
+      [t("cFree"), fmt(r.free)]
     ];
     var c = document.getElementById("calc"); c.innerHTML="";
     lines.forEach(function(l,i){ var d=el("div",{}); d.append(el("span",{text:l[0]}), el("span",{text:l[1]})); if(i===3) d.style.color="var(--text)"; c.append(d); });
@@ -285,8 +373,8 @@ select.bar{color:var(--cash)} select.konto{color:var(--konto)}
   onTap(document.getElementById("addExpense"), function(){ state.expenses.push({name:"",amount:"",pay:"konto"}); render(); save(); focusLast("#expenseList input:not(.num)"); });
   ["bufKonto","bufCash"].forEach(function(id){ var i=document.getElementById(id); i.addEventListener("input",function(){ state[id]=i.value; mark(i); update(); }); });
   var rb=document.getElementById("reset"), armed=0;
-  onTap(rb, function(){ if (Date.now()-armed < 4000){ armed=0; rb.textContent="Alles zurücksetzen"; state = JSON.parse(JSON.stringify(DEFAULT)); render(); save(); }
-    else { armed=Date.now(); rb.textContent="Wirklich alles löschen? Nochmal tippen"; setTimeout(function(){ if(armed && Date.now()-armed>=4000){ armed=0; rb.textContent="Alles zurücksetzen"; } },4100); } });
+  onTap(rb, function(){ if (Date.now()-armed < 4000){ armed=0; rb.textContent=t("reset"); state = makeDefault(); render(); save(); }
+    else { armed=Date.now(); rb.textContent=t("resetConfirm"); setTimeout(function(){ if(armed && Date.now()-armed>=4000){ armed=0; rb.textContent=t("reset"); } },4100); } });
 
   function stamp(){ var d=new Date(); return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2); }
   function buildHtml(){
@@ -295,21 +383,28 @@ select.bar{color:var(--cash)} select.konto{color:var(--konto)}
     return SOURCE.replace(re, function(_,a,b){ return a + json + b; });
   }
   function buildPdf(){
-    var J = window.jspdf && window.jspdf.jsPDF; if(!J) throw new Error("PDF-Modul nicht geladen");
+    var J = window.jspdf && window.jspdf.jsPDF; if(!J) throw new Error("jsPDF");
     var r = compute(state), doc = new J({unit:"mm",format:"a4"}), y = 20, L = 18, R = 192;
-    var f = function(c){ return fmt(c).replace("\u2212","-"); };
+    var FN = "helvetica";
+    if (FONTS.regular && FONTS.bold) {
+      doc.addFileToVFS("DejaVuSans.ttf", FONTS.regular); doc.addFont("DejaVuSans.ttf", "dejavu", "normal");
+      doc.addFileToVFS("DejaVuSans-Bold.ttf", FONTS.bold); doc.addFont("DejaVuSans-Bold.ttf", "dejavu", "bold");
+      FN = "dejavu";
+    }
+    var f = function(c){ return FN === "helvetica" ? fmt(c).replace("\u2212","-") : fmt(c); };
     function need(h){ if (y + h > 280){ doc.addPage(); y = 20; } }
-    function line(a,b,bold,size){ need(7); doc.setFont("helvetica", bold?"bold":"normal"); doc.setFontSize(size||10.5);
-      var t = doc.splitTextToSize(String(a||"(ohne Name)"), 120); doc.text(t, L, y); doc.text(b, R, y, {align:"right"}); y += 5.6*t.length; }
-    function head(t){ need(14); y += 4; doc.setFont("helvetica","bold"); doc.setFontSize(13); doc.text(t, L, y); y += 2; doc.setDrawColor(180); doc.line(L,y,R,y); y += 6; }
-    doc.setFont("helvetica","bold"); doc.setFontSize(18); doc.text("Bargeld-Planer", L, y);
-    doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.text("Stand: " + new Date().toLocaleDateString("de-DE"), R, y, {align:"right"}); y += 12;
-    doc.setFontSize(12); doc.text("Max. bar abheben:", L, y); doc.setFont("helvetica","bold"); doc.setFontSize(16); doc.text(f(Math.max(r.maxCash,0)), R, y, {align:"right"}); y += 7;
-    if (r.atm>0){ doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.text("Am Automaten (auf 10 EUR abgerundet): " + f(r.atm), L, y); y += 6; }
-    head("Einnahmen"); state.income.forEach(function(x){ if(!String(x.name).trim() && !String(x.amount).trim()) return; var c=toCents(x.amount); line(x.name, c===null?"ungültig":f(c)); }); line("Summe", f(r.inc), true);
-    head("Ausgaben"); state.expenses.forEach(function(x){ if(!String(x.name).trim() && !String(x.amount).trim()) return; var c=toCents(x.amount); line((String(x.name).trim()||"(ohne Name)") + "  [" + (x.pay==="bar"?"Bar":"Konto") + "]", c===null?"ungültig":f(c)); }); line("Summe", f(r.konto+r.bar), true);
-    head("Rechnung");
-    [["Einnahmen",r.inc],["- Konto-Ausgaben",r.konto],["- Puffer Konto",r.bk],["= Max. bar abheben",r.maxCash,1],["- Bar-Ausgaben",r.bar],["- Puffer bar",r.bc],["= Bar frei zum Ausgeben",r.free,1]]
+    function P(x){ return FN === "helvetica" ? String(x).replace(/\u2212/g,"-") : String(x); }
+    function line(a,b,bold,size){ need(7); doc.setFont(FN, bold?"bold":"normal"); doc.setFontSize(size||10.5);
+      var tl = doc.splitTextToSize(P(a||t("noName")), 120); doc.text(tl, L, y); doc.text(P(b), R, y, {align:"right"}); y += 5.6*tl.length; }
+    function head(h){ need(14); y += 4; doc.setFont(FN,"bold"); doc.setFontSize(13); doc.text(P(h), L, y); y += 2; doc.setDrawColor(180); doc.line(L,y,R,y); y += 6; }
+    doc.setFont(FN,"bold"); doc.setFontSize(18); doc.text(t("title"), L, y);
+    doc.setFont(FN,"normal"); doc.setFontSize(10); doc.text(t("asOf") + new Date().toLocaleDateString(t("locale")), R, y, {align:"right"}); y += 12;
+    doc.setFontSize(12); doc.text(t("pdfMax"), L, y); doc.setFont(FN,"bold"); doc.setFontSize(16); doc.text(f(Math.max(r.maxCash,0)), R, y, {align:"right"}); y += 7;
+    if (r.atm>0){ doc.setFont(FN,"normal"); doc.setFontSize(10); doc.text(P(t("atm") + f(r.atm)), L, y); y += 6; }
+    head(t("income")); state.income.forEach(function(x){ if(!String(x.name).trim() && !String(x.amount).trim()) return; var c=toCents(x.amount); line(x.name, c===null?t("invalidShort"):f(c)); }); line(t("total"), f(r.inc), true);
+    head(t("expenses")); state.expenses.forEach(function(x){ if(!String(x.name).trim() && !String(x.amount).trim()) return; var c=toCents(x.amount); line((String(x.name).trim()||t("noName")) + "  [" + (x.pay==="bar"?t("bar"):t("konto")) + "]", c===null?t("invalidShort"):f(c)); }); line(t("total"), f(r.konto+r.bar), true);
+    head(t("calc"));
+    [[t("cIncome"),r.inc],[t("cKonto"),r.konto],[t("cBufK"),r.bk],[t("cMax"),r.maxCash,1],[t("cBar"),r.bar],[t("cBufC"),r.bc],[t("cFree"),r.free,1]]
       .forEach(function(l){ line(l[0], f(l[1]), !!l[2]); });
     return doc.output("blob");
   }
@@ -317,16 +412,16 @@ select.bar{color:var(--cash)} select.konto{color:var(--konto)}
   if (window.claude && typeof window.claude.use === "function") window.claude.use("downloads").then(function(d){ dl = d; }, function(){});
   function msg(t){ document.getElementById("expMsg").textContent = t; }
   function offer(name, data){
-    if (dl) return dl.save({filename:name, data:data}).then(function(){ msg("Gespeichert: " + name); }, function(e){
-      msg(e && e.code==="declined" ? "Speichern abgebrochen." : "Speichern hier nicht möglich (" + (e&&e.code||"Fehler") + ")."); });
-    if (window.claude) { msg("Speichern ist in dieser Ansicht nicht verfügbar."); return; }
+    if (dl) return dl.save({filename:name, data:data}).then(function(){ msg(t("saved") + name); }, function(e){
+      msg(e && e.code==="declined" ? t("cancelled") : t("notPossible")(e&&e.code||"error")); });
+    if (window.claude) { msg(t("notAvail")); return; }
     var blob = data instanceof Blob ? data : new Blob([data], {type:(/\.json$/.test(name)?"application/json":"text/html")+";charset=utf-8"});
     var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
     document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-    msg("Gespeichert: " + name);
+    msg(t("saved") + name);
   }
   window.__buildHtml = buildHtml; window.__buildPdf = buildPdf;
-  onTap(document.getElementById("saveHtml"), function(){ save(); offer("bargeld-planer_" + stamp() + ".html", buildHtml()); });
+  onTap(document.getElementById("saveHtml"), function(){ save(); offer(t("file") + "_" + stamp() + ".html", buildHtml()); });
   var PDFLIB = "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js";
   var pdfLoading = null;
   function loadPdf(){
@@ -337,31 +432,67 @@ select.bar{color:var(--cash)} select.konto{color:var(--konto)}
     sc.onerror = function(){ var q = pdfLoading; pdfLoading = null; sc.remove(); q.forEach(function(f){ f(false); }); };
     document.head.appendChild(sc);
   }
+  var FONTS = {regular:null, bold:null}, FONTBASE = "https://cdn.jsdelivr.net/npm/dejavu-fonts-ttf@2.37.3/ttf/", fontsLoading = null;
+  function b64(buf){ var u = new Uint8Array(buf), out = "", i, CH = 0x8000; for (i = 0; i < u.length; i += CH) out += String.fromCharCode.apply(null, u.subarray(i, i + CH)); return btoa(out); }
+  function pdfTexts(){ var a = []; state.income.concat(state.expenses).forEach(function(x){ a.push(String(x.name||"")); });
+    Object.keys(T[LANG]).forEach(function(k){ if (typeof T[LANG][k] === "string") a.push(T[LANG][k]); }); return a.join(" "); }
+  // WinAnsi (Standardschrift im PDF) kennt č, ć, đ und viele andere Zeichen nicht
+  function needsUnicode(){ return /[^\x00-\xFF€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ−]/.test(pdfTexts()); }
+  function loadFonts(done){
+    if (FONTS.regular && FONTS.bold) return done(true);
+    if (fontsLoading) { fontsLoading.push(done); return; }
+    fontsLoading = [done];
+    var finish = function(ok){ var q = fontsLoading; fontsLoading = null; q.forEach(function(f){ f(ok); }); };
+    try {
+      Promise.all(["DejaVuSans.ttf","DejaVuSans-Bold.ttf"].map(function(n){ return fetch(FONTBASE + n).then(function(r){ if(!r.ok) throw new Error(r.status); return r.arrayBuffer(); }); }))
+        .then(function(b){ FONTS.regular = b64(b[0]); FONTS.bold = b64(b[1]); finish(true); }, function(){ finish(false); });
+    } catch(e){ finish(false); }
+  }
+  window.__fonts = FONTS;
   function withPdf(cb){
+    if (needsUnicode() && !(FONTS.regular && FONTS.bold)) {
+      msg(t("pdfLoading"));
+      return loadFonts(function(ok){ if (!ok) return msg(t("pdfLoadFail")); msg(""); withPdf(cb); });
+    }
     if (window.jspdf) return cb();
-    msg("PDF-Modul wird geladen …"); loadPdf();
-    if (pdfLoading) pdfLoading.push(function(ok){ if (ok){ msg(""); cb(); } else msg("PDF-Modul konnte nicht geladen werden – Internetverbindung prüfen."); });
+    msg(t("pdfLoading")); loadPdf();
+    if (pdfLoading) pdfLoading.push(function(ok){ if (ok){ msg(""); cb(); } else msg(t("pdfLoadFail")); });
     else if (window.jspdf) cb();
   }
   // im Hintergrund vorladen, damit der Download direkt beim Tippen startet (wichtig für iOS)
-  setTimeout(loadPdf, 1500);
-  onTap(document.getElementById("savePdf"), function(){ withPdf(function(){ try { offer("bargeld-planer_" + stamp() + ".pdf", buildPdf()); } catch(e){ msg("PDF konnte nicht erstellt werden: " + e.message); } }); });
+  setTimeout(function(){ loadPdf(); if (LANG === "hr" || needsUnicode()) loadFonts(function(){}); }, 1500);
+  onTap(document.getElementById("savePdf"), function(){ withPdf(function(){ try { offer(t("file") + "_" + stamp() + ".pdf", buildPdf()); } catch(e){ msg(t("pdfFail") + e.message); } }); });
 
-  onTap(document.getElementById("saveData"), function(){ var c=JSON.parse(JSON.stringify(state)); offer("bargeld-daten_" + stamp() + ".json", JSON.stringify(c,null,1)); });
+  onTap(document.getElementById("saveData"), function(){ var c=JSON.parse(JSON.stringify(state)); offer(t("dataFile") + "_" + stamp() + ".json", JSON.stringify(c,null,1)); });
   var fi = document.getElementById("fileIn");
   onTap(document.getElementById("loadData"), function(){ fi.value=""; fi.click(); });
-  function importText(t){
-    var d; try { d = JSON.parse(t); } catch(e){ msg("Datei konnte nicht gelesen werden (kein gültiges Format)."); return false; }
-    if (!valid(d)){ msg("Datei enthält keine Planer-Daten."); return false; }
+  function importText(txt){
+    var d; try { d = JSON.parse(txt); } catch(e){ msg(t("readFailFmt")); return false; }
+    if (!valid(d)){ msg(t("noData")); return false; }
     state = {income:d.income.map(function(x){return {name:String(x.name||""),amount:String(x.amount==null?"":x.amount)};}),
       expenses:d.expenses.map(function(x){return {name:String(x.name||""),amount:String(x.amount==null?"":x.amount),pay:x.pay==="bar"?"bar":"konto"};}),
       bufKonto:String(d.bufKonto==null?"50,00":d.bufKonto), bufCash:String(d.bufCash==null?"50,00":d.bufCash)};
-    render(); save(); msg("Daten geladen: " + state.income.length + " Einnahmen, " + state.expenses.length + " Ausgaben."); return true;
+    render(); save(); msg(t("loaded")(state.income.length, state.expenses.length)); return true;
   }
   window.__import = importText;
   fi.addEventListener("change", function(){ var f = fi.files && fi.files[0]; if(!f) return; var r = new FileReader();
-    r.onload = function(){ importText(String(r.result)); }; r.onerror = function(){ msg("Datei konnte nicht gelesen werden."); }; r.readAsText(f); });
+    r.onload = function(){ importText(String(r.result)); }; r.onerror = function(){ msg(t("readFail")); }; r.readAsText(f); });
 
+  function applyLang(){
+    document.documentElement.lang = LANG;
+    document.title = t("title");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"), function(n){ var v = t(n.getAttribute("data-i18n")); if (typeof v === "string") n.textContent = v; });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-lang]"), function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-lang") === LANG ? "true" : "false"); });
+    var tm = document.querySelector('meta[name="apple-mobile-web-app-title"]'); if (tm) tm.setAttribute("content", t("title"));
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-lang]"), function(b){
+    onTap(b, function(){ var nl = b.getAttribute("data-lang"); if (nl === LANG) return;
+      var pristine = !state.savedAt; LANG = nl; try { localStorage.setItem(LKEY, LANG); } catch(e){}
+      if (pristine) state = makeDefault();
+      applyLang(); render(); msg(""); if (LANG === "hr" || needsUnicode()) loadFonts(function(){}); });
+  });
+  window.__setLang = function(l){ var b = document.querySelector('[data-lang="'+l+'"]'); b.click(); };
+  applyLang();
   render(); ready = true;
 })();
 </script>
